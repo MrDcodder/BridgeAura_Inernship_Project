@@ -21,6 +21,7 @@ import { DossierReviewScreen } from './components/DossierReviewScreen';
 import { SynthesisOutputScreen } from './components/SynthesisOutputScreen';
 import { BackendArchModal } from './components/BackendArchModal';
 import { AmbientStarfieldBackground } from './components/AmbientStarfieldBackground';
+import { PremiumUpgradeModal } from './components/PremiumUpgradeModal';
 
 export default function App() {
   const [screen, setScreen] = useState<ScreenMode>('AUTH');
@@ -39,6 +40,8 @@ export default function App() {
   const [isSynthesizing, setIsSynthesizing] = useState(false);
   const [ambientMode, setAmbientMode] = useState<'daylight' | 'studio'>('daylight');
   const [backendModalOpen, setBackendModalOpen] = useState(false);
+  const [isPro, setIsPro] = useState(false);
+  const [premiumModalOpen, setPremiumModalOpen] = useState(false);
   const [qwenApiBase, setQwenApiBase] = useState('http://localhost:11434/v1');
   const [qwenModelName, setQwenModelName] = useState('qwen3:4b');
 
@@ -146,6 +149,9 @@ export default function App() {
     } finally {
       setIsSynthesizing(false);
       setScreen('SYNTHESIS');
+      if (!isPro) {
+        setPremiumModalOpen(true);
+      }
     }
   };
 
@@ -194,7 +200,12 @@ export default function App() {
             setScreen('DECK');
           }}
           onJumpToDossier={() => setScreen('DOSSIER')}
-          onJumpToSynthesis={() => setScreen('SYNTHESIS')}
+          onJumpToSynthesis={() => {
+            setScreen('SYNTHESIS');
+            if (!isPro) {
+              setPremiumModalOpen(true);
+            }
+          }}
           onOpenBackendArch={() => setBackendModalOpen(true)}
         />
       ) : (
@@ -204,7 +215,12 @@ export default function App() {
             currentScreen={screen}
             activePerspective={activeQuestion.perspective}
             onSelectPerspective={handleSelectPerspective}
-            onNavigateScreen={setScreen}
+            onNavigateScreen={(nextScreen) => {
+              setScreen(nextScreen);
+              if (nextScreen === 'SYNTHESIS' && !isPro) {
+                setPremiumModalOpen(true);
+              }
+            }}
             onOpenBackendArch={() => setBackendModalOpen(true)}
             email={email}
             ambientMode={ambientMode}
@@ -212,6 +228,8 @@ export default function App() {
               setAmbientMode((m) => (m === 'daylight' ? 'studio' : 'daylight'))
             }
             onLogout={handleLogout}
+            isPro={isPro}
+            onOpenProModal={() => setPremiumModalOpen(true)}
           />
 
           {/* Main Content Arena */}
@@ -256,11 +274,25 @@ export default function App() {
                 }
                 onBackToDeck={() => setScreen('DECK')}
                 onOpenBackendArch={() => setBackendModalOpen(true)}
+                isPro={isPro}
+                onOpenProModal={() => setPremiumModalOpen(true)}
               />
             )}
           </main>
         </>
       )}
+
+      {/* Skippable Premium Plan ($49/month) Restriction Pop-up Modal */}
+      <PremiumUpgradeModal
+        isOpen={premiumModalOpen}
+        isPro={isPro}
+        ventureName={ventureName}
+        onSkip={() => setPremiumModalOpen(false)}
+        onUpgradeSuccess={() => {
+          setIsPro(true);
+          setPremiumModalOpen(false);
+        }}
+      />
 
       {/* Qwen3 4B Backend Architecture & Live Inspector Modal */}
       <BackendArchModal

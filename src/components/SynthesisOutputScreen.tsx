@@ -14,6 +14,8 @@ interface SynthesisOutputScreenProps {
   onUpdateWeightsAndResynthesize: (newWeights: WeightParameters) => void;
   onBackToDeck: () => void;
   onOpenBackendArch: () => void;
+  isPro: boolean;
+  onOpenProModal: () => void;
 }
 
 export const SynthesisOutputScreen: React.FC<SynthesisOutputScreenProps> = ({
@@ -25,6 +27,8 @@ export const SynthesisOutputScreen: React.FC<SynthesisOutputScreenProps> = ({
   onUpdateWeightsAndResynthesize,
   onBackToDeck,
   onOpenBackendArch,
+  isPro,
+  onOpenProModal,
 }) => {
   const [activePhaseIdx, setActivePhaseIdx] = useState(0);
   const [showWeightModal, setShowWeightModal] = useState(false);
@@ -37,6 +41,10 @@ export const SynthesisOutputScreen: React.FC<SynthesisOutputScreenProps> = ({
   const nextPhase = phases[activePhaseIdx + 1];
 
   const handleExportDossier = () => {
+    if (!isPro) {
+      onOpenProModal();
+      return;
+    }
     const payload = {
       application: 'Venture Vision: smart start creates smart startups',
       modelBackbone: synthesis.modelEngine,
@@ -74,6 +82,44 @@ export const SynthesisOutputScreen: React.FC<SynthesisOutputScreenProps> = ({
 
   return (
     <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 py-5 flex flex-col items-center">
+      {/* Top Indication Card to Buy Pro Subscription ($49/month) */}
+      <div className="w-full max-w-[820px] mb-4 rounded-2xl bg-white/92 backdrop-blur-xl border border-[#00685f]/30 px-4 py-3 flex flex-wrap items-center justify-between gap-3 shadow-xs">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-[#e6f4f1] text-[#00685f] flex items-center justify-center shrink-0">
+            <span className="material-symbols-outlined text-lg">
+              workspace_premium
+            </span>
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="font-headline font-bold text-xs sm:text-sm text-[#0F172A]">
+                {isPro
+                  ? 'Venture Vision Pro Subscription Active'
+                  : 'Unlock Full Venture Vision Pro Synthesis'}
+              </span>
+              <span className="px-2 py-0.5 rounded-full bg-[#e6f4f1] text-[#00685f] text-[10px] font-bold uppercase tracking-wider">
+                $49 / month
+              </span>
+            </div>
+            <p className="text-[11px] text-[#64748B]">
+              {isPro
+                ? 'All premium Qwen3 4B deep-reasoning traces, weight controls, and dossier exports are enabled.'
+                : 'Previewing executive summary. Upgrade to Pro for unlimited Qwen3 4B deep-reasoning & full dossier exports.'}
+            </p>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={onOpenProModal}
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-gradient-to-r from-[#00685f] to-[#008378] text-white text-xs font-bold shadow-xs teal-cta-glow transition-all hover:scale-[1.02] cursor-pointer"
+        >
+          <span className="material-symbols-outlined text-[15px]">
+            {isPro ? 'verified' : 'lock_open'}
+          </span>
+          <span>{isPro ? 'Pro Plan Active' : 'Buy Pro Subscription ($49/mo)'}</span>
+        </button>
+      </div>
       {/* Sub-Header Status Bar (matching Image 8) */}
       <div className="w-full max-w-[820px] flex flex-wrap items-center justify-between gap-3 mb-5">
         <div className="flex flex-wrap items-center gap-2.5">
