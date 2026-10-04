@@ -1,0 +1,231 @@
+@import "tailwindcss";
+
+@theme {
+  --color-surface: #f5faf8;
+  --color-surface-dim: #d6dbd9;
+  --color-surface-bright: #f5faf8;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f0f5f2;
+  --color-surface-container: #eaefed;
+  --color-surface-container-high: #e4e9e7;
+  --color-surface-container-highest: #dee4e1;
+  --color-on-surface: #171d1c;
+  --color-on-surface-variant: #3d4947;
+  --color-inverse-surface: #2c3130;
+  --color-inverse-on-surface: #edf2f0;
+  --color-outline: #6d7a77;
+  --color-outline-variant: #bcc9c6;
+  --color-surface-tint: #006a61;
+  --color-primary: #00685f;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #008378;
+  --color-on-primary-container: #f4fffc;
+  --color-inverse-primary: #6bd8cb;
+  --color-secondary: #505f76;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #d0e1fb;
+  --color-on-secondary-container: #54647a;
+  --color-tertiary: #924628;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #b05e3d;
+  --color-on-tertiary-container: #fffbff;
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+  --color-primary-fixed: #89f5e7;
+  --color-primary-fixed-dim: #6bd8cb;
+  --color-on-primary-fixed: #00201d;
+  --color-on-primary-fixed-variant: #005049;
+  --color-secondary-fixed: #d3e4fe;
+  --color-secondary-fixed-dim: #b7c8e1;
+  --color-on-secondary-fixed: #0b1c30;
+  --color-on-secondary-fixed-variant: #38485d;
+  --color-tertiary-fixed: #ffdbce;
+  --color-tertiary-fixed-dim: #ffb59a;
+  --color-on-tertiary-fixed: #370e00;
+  --color-on-tertiary-fixed-variant: #773215;
+  --color-background: #f5faf8;
+  --color-on-background: #171d1c;
+  --color-surface-variant: #dee4e1;
+  --color-bg-base: #F8F9FA;
+  --color-bg-base-tint: #F4F5F7;
+  --color-surface-glass: rgba(255, 255, 255, 0.78);
+  --color-surface-glass-active: rgba(255, 255, 255, 0.92);
+  --color-surface-glass-dim: rgba(255, 255, 255, 0.45);
+  --color-border-glass: rgba(255, 255, 255, 0.65);
+  --color-border-subtle: rgba(100, 116, 139, 0.16);
+  --color-text-primary: #0F172A;
+  --color-text-secondary: #64748B;
+  --color-text-muted: #94A3B8;
+  --color-accent-glow: rgba(13, 148, 136, 0.22);
+  --color-ambient-blob-1: rgba(13, 148, 136, 0.08);
+  --color-ambient-blob-2: rgba(99, 102, 241, 0.06);
+
+  --font-display: 'Comic Sans MS', 'Comic Sans', 'Comic Neue', cursive, sans-serif;
+  --font-sans: 'Comic Sans MS', 'Comic Sans', 'Comic Neue', cursive, sans-serif;
+  --font-mono: 'Comic Sans MS', 'Comic Sans', 'Comic Neue', monospace;
+}
+
+@layer base {
+  html, body, button, input, textarea, select {
+    margin: 0;
+    padding: 0;
+    font-family: 'Comic Sans MS', 'Comic Sans', 'Comic Neue', cursive, sans-serif;
+    overscroll-behavior: none;
+  }
+}
+
+.font-headline {
+  font-family: 'Comic Sans MS', 'Comic Sans', 'Comic Neue', cursive, sans-serif;
+}
+
+.font-body {
+  font-family: 'Comic Sans MS', 'Comic Sans', 'Comic Neue', cursive, sans-serif;
+}
+
+.font-mono-tabular {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Custom glass card shadows matching Luminous Deck spec */
+.luminous-card-shadow {
+  box-shadow:
+    0 24px 48px -12px rgba(15, 23, 42, 0.08),
+    0 8px 16px -4px rgba(15, 23, 42, 0.04),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.luminous-subdeck-1 {
+  box-shadow: 0 16px 32px -8px rgba(15, 23, 42, 0.06);
+}
+
+.luminous-subdeck-2 {
+  box-shadow: 0 12px 24px -6px rgba(15, 23, 42, 0.04);
+}
+
+.teal-cta-glow:hover {
+  box-shadow: 0 8px 20px -4px rgba(0, 104, 95, 0.38);
+}
+
+/* ==========================================================================
+   Dark Theme ("Obsidian Luminous Deck") Overrides
+   ========================================================================== */
+.theme-dark {
+  color-scheme: dark;
+  background-color: #070d14;
+  color: #f1f5f9;
+}
+
+.theme-dark .luminous-card-shadow {
+  box-shadow:
+    0 28px 60px -12px rgba(0, 0, 0, 0.65),
+    0 12px 24px -6px rgba(0, 0, 0, 0.45),
+    inset 0 1px 1px 0 rgba(137, 245, 231, 0.14);
+}
+
+.theme-dark .luminous-subdeck-1 {
+  background-color: rgba(15, 25, 38, 0.78) !important;
+  border-color: rgba(148, 163, 184, 0.14) !important;
+  box-shadow: 0 18px 36px -8px rgba(0, 0, 0, 0.55);
+}
+
+.theme-dark .luminous-subdeck-2 {
+  background-color: rgba(12, 20, 31, 0.58) !important;
+  border-color: rgba(148, 163, 184, 0.1) !important;
+  box-shadow: 0 14px 28px -6px rgba(0, 0, 0, 0.45);
+}
+
+/* Glass & Solid Card Surfaces in Dark Mode */
+.theme-dark [class*="bg-white"] {
+  background-color: rgba(15, 24, 36, 0.88) !important;
+  border-color: rgba(148, 163, 184, 0.16) !important;
+}
+
+.theme-dark [class*="bg-[#f5faf8]"],
+.theme-dark [class*="bg-[#f8faf9]"] {
+  background-color: rgba(21, 33, 48, 0.85) !important;
+  border-color: rgba(148, 163, 184, 0.14) !important;
+}
+
+.theme-dark [class*="bg-[#f0f5f2]"],
+.theme-dark [class*="bg-[#eaefed]"],
+.theme-dark [class*="bg-[#e4e9e7]"],
+.theme-dark [class*="bg-[#dee4e1]"] {
+  background-color: rgba(30, 44, 62, 0.85) !important;
+  border-color: rgba(148, 163, 184, 0.18) !important;
+}
+
+/* Selected Option & Highlight Pills in Dark Mode */
+.theme-dark [class*="bg-[#e6f4f1]"],
+.theme-dark [class*="bg-[#e6f7f5]"],
+.theme-dark [class*="bg-[#89f5e7]"] {
+  background-color: rgba(13, 148, 136, 0.22) !important;
+  border-color: rgba(45, 212, 191, 0.42) !important;
+}
+
+/* Risk Callout Box in Dark Mode */
+.theme-dark [class*="bg-[#ffdbce]"] {
+  background-color: rgba(146, 70, 40, 0.22) !important;
+  border-color: rgba(251, 146, 60, 0.35) !important;
+}
+
+/* Typography Hierarchy in Dark Mode */
+.theme-dark [class*="text-[#0F172A]"],
+.theme-dark [class*="text-[#1e293b]"],
+.theme-dark [class*="text-[#334155]"] {
+  color: #f1f5f9 !important;
+}
+
+.theme-dark [class*="text-[#475569]"],
+.theme-dark [class*="text-[#64748B]"],
+.theme-dark [class*="text-[#6d7a77]"] {
+  color: #94a3b8 !important;
+}
+
+.theme-dark [class*="text-[#00685f]"],
+.theme-dark [class*="text-[#005049]"],
+.theme-dark [class*="text-[#004d46]"] {
+  color: #2dd4bf !important;
+}
+
+.theme-dark [class*="text-[#924628]"],
+.theme-dark [class*="text-[#370e00]"] {
+  color: #fdba74 !important;
+}
+
+/* Form Inputs, Textareas, Selects in Dark Mode */
+.theme-dark input,
+.theme-dark textarea,
+.theme-dark select {
+  background-color: rgba(10, 17, 26, 0.9) !important;
+  color: #f1f5f9 !important;
+  border-color: rgba(148, 163, 184, 0.24) !important;
+}
+
+.theme-dark input::placeholder,
+.theme-dark textarea::placeholder {
+  color: #64748b !important;
+}
+
+.theme-dark input:focus,
+.theme-dark textarea:focus,
+.theme-dark select:focus {
+  border-color: #2dd4bf !important;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  user-select: none;
+}
+
+.material-symbols-filled {
+  font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+  user-select: none;
+}
+

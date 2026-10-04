@@ -1,0 +1,6 @@
+{
+  "name": "Aether Deck — VentureVision AI Strategy Engine",
+  "description": "Tactile 3D card-deck startup strategy diagnostic and executive synthesis engine powered by Qwen3 4B.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
