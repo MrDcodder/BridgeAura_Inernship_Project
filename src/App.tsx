@@ -3,8 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
+  createIdeaTailoredQuestions,
   DECK_QUESTIONS,
   DEFAULT_SYNTHESIS_RESULT,
   DEFAULT_WEIGHTS,
@@ -22,11 +23,14 @@ import { SynthesisOutputScreen } from './components/SynthesisOutputScreen';
 import { BackendArchModal } from './components/BackendArchModal';
 import { AmbientStarfieldBackground } from './components/AmbientStarfieldBackground';
 import { PremiumUpgradeModal } from './components/PremiumUpgradeModal';
+import { StartupIdeaScreen } from './components/StartupIdeaScreen';
 
 export default function App() {
   const [screen, setScreen] = useState<ScreenMode>('AUTH');
   const [email, setEmail] = useState('founder@startup.io');
   const [ventureName, setVentureName] = useState('Venture Vision');
+  const [startupIdea, setStartupIdea] = useState('');
+  const [startupIdeaError, setStartupIdeaError] = useState<string | null>(null);
   // Start on index 3 (CUST-04: Question 04 / 08) so the initial Deck view matches Image 6 immediately
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(3);
   const [answers, setAnswers] = useState<Record<string, AnswerRecord>>(() =>
@@ -44,6 +48,10 @@ export default function App() {
   const [premiumModalOpen, setPremiumModalOpen] = useState(false);
   const [qwenApiBase, setQwenApiBase] = useState('http://localhost:11434/v1');
   const [qwenModelName, setQwenModelName] = useState('qwen3:4b');
+  const questions = useMemo(
+    () => createIdeaTailoredQuestions(startupIdea),
+    [startupIdea]
+  );
 
   // Hydrate initial session state from Express backend on mount
   useEffect(() => {
@@ -53,6 +61,7 @@ export default function App() {
         if (data) {
           if (data.email) setEmail(data.email);
           if (data.ventureName) setVentureName(data.ventureName);
+          if (data.startupIdea) setStartupIdea(data.startupIdea);
           if (data.answers) setAnswers(data.answers);
           if (data.weights) setWeights(data.weights);
           if (data.lastSynthesis) setSynthesis(data.lastSynthesis);
@@ -108,11 +117,10 @@ export default function App() {
 
   const handleSelectPerspective = (perspective: PerspectiveId) => {
     if (perspective === 'CUSTOMER') {
-      // Jump to Question 04/08 on Customer if coming from overview, or first question of Customer
       setCurrentQuestionIndex(3);
       return;
     }
-    const firstIdx = DECK_QUESTIONS.findIndex(
+    const firstIdx = questions.findIndex(
       (q) => q.perspective === perspective
     );
     if (firstIdx !== -1) {
@@ -134,6 +142,7 @@ export default function App() {
           answers,
           weights: activeWeights,
           ventureName,
+          startupIdea,
           apiBase: qwenApiBase,
           modelName: qwenModelName,
         }),
@@ -172,8 +181,28 @@ export default function App() {
     setScreen('AUTH');
   };
 
+  const handleContinueFromIdea = async () => {
+    const idea = startupIdea.trim();
+    if (!idea) return;
+    setStartupIdeaError(null);
+    try {
+      const response = await fetch('/api/session/autosave', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ startupIdea: idea }),
+      });
+      if (!response.ok) {
+        throw new Error('The idea could not be saved.');
+      }
+      setStartupIdea(idea);
+      setScreen('DECK');
+    } catch {
+      setStartupIdeaError('Could not save your idea. Please try again.');
+    }
+  };
+
   const activeQuestion =
-    DECK_QUESTIONS[currentQuestionIndex] || DECK_QUESTIONS[0];
+    questions[currentQuestionIndex] || DECK_QUESTIONS[0];
 
   return (
     <div
@@ -193,11 +222,13 @@ export default function App() {
           setEmail={setEmail}
           ventureName={ventureName}
           setVentureName={setVentureName}
+          setStartupIdea={setStartupIdea}
           onStartDeck={(targetPerspective) => {
             if (targetPerspective) {
               handleSelectPerspective(targetPerspective);
             }
-            setScreen('DECK');
+            setStartupIdeaError(null);
+            setScreen('IDEA');
           }}
           onJumpToDossier={() => setScreen('DOSSIER')}
           onJumpToSynthesis={() => {
@@ -207,6 +238,16 @@ export default function App() {
             }
           }}
           onOpenBackendArch={() => setBackendModalOpen(true)}
+        />
+      ) : screen === 'IDEA' ? (
+        <StartupIdeaScreen
+          idea={startupIdea}
+          onChangeIdea={(idea) => {
+            setStartupIdea(idea);
+            setStartupIdeaError(null);
+          }}
+          onContinue={handleContinueFromIdea}
+          error={startupIdeaError}
         />
       ) : (
         <>
@@ -236,6 +277,7 @@ export default function App() {
           <main className="relative z-10 flex-1 flex flex-col justify-center">
             {screen === 'DECK' && (
               <QuestionDeckScreen
+                questions={questions}
                 currentQuestionIndex={currentQuestionIndex}
                 onChangeQuestionIndex={setCurrentQuestionIndex}
                 answers={answers}
@@ -248,6 +290,7 @@ export default function App() {
 
             {screen === 'DOSSIER' && (
               <DossierReviewScreen
+                questions={questions}
                 answers={answers}
                 onEditPerspective={(p) => {
                   handleSelectPerspective(p);

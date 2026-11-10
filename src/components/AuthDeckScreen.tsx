@@ -7,6 +7,7 @@ interface AuthDeckScreenProps {
   setEmail: (email: string) => void;
   ventureName: string;
   setVentureName: (name: string) => void;
+  setStartupIdea: (idea: string) => void;
   onStartDeck: (targetPerspective?: PerspectiveId) => void;
   onJumpToDossier: () => void;
   onJumpToSynthesis: () => void;
@@ -18,6 +19,7 @@ export const AuthDeckScreen: React.FC<AuthDeckScreenProps> = ({
   setEmail,
   ventureName,
   setVentureName,
+  setStartupIdea,
   onStartDeck,
   onJumpToDossier,
   onJumpToSynthesis,
@@ -118,6 +120,7 @@ export const AuthDeckScreen: React.FC<AuthDeckScreenProps> = ({
 
       if (data.user?.email) setEmail(data.user.email);
       if (data.user?.ventureName) setVentureName(data.user.ventureName);
+      setStartupIdea(data.user?.startupIdea || '');
       if (isRegisterMode) {
         setAuthSuccessMsg(`Account created for ${data.user?.fullName || email}!`);
       }

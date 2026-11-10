@@ -23,6 +23,7 @@ const PORT = 3000;
 interface WorkspaceState {
   email: string;
   ventureName: string;
+  startupIdea: string;
   answers: Record<string, AnswerRecord>;
   weights: WeightParameters;
   lastSynthesis: SynthesisResult;
@@ -38,6 +39,7 @@ interface WorkspaceState {
 const workspaceStore: WorkspaceState = {
   email: 'founder@startup.io',
   ventureName: 'Venture Vision',
+  startupIdea: '',
   answers: createInitialAnswers(),
   weights: { ...DEFAULT_WEIGHTS },
   lastSynthesis: { ...DEFAULT_SYNTHESIS_RESULT },
@@ -56,6 +58,7 @@ export interface RegisteredUserRecord {
   fullName: string;
   email: string;
   ventureName: string;
+  startupIdea: string;
   founderRole: string;
   ventureStage: string;
   passwordSalt: string;
@@ -87,6 +90,7 @@ function loadUsersFromDisk(): Record<string, RegisteredUserRecord> {
       fullName: 'Executive Founder',
       email: 'founder@startup.io',
       ventureName: 'Venture Vision',
+      startupIdea: '',
       founderRole: 'Founder & CEO',
       ventureStage: 'Seed Stage',
       passwordSalt: defaultSalt,
@@ -190,7 +194,8 @@ function computeVectorScores(
 function buildQwen3Messages(
   answers: Record<string, AnswerRecord>,
   weights: WeightParameters,
-  ventureName: string
+  ventureName: string,
+  startupIdea: string
 ) {
   const thinkDirective = weights.qwenThinkingMode ? '/think' : '/no_think';
 
@@ -209,12 +214,14 @@ function buildQwen3Messages(
   );
 
   const systemPrompt = `You are the Qwen3 4B Strategic Synthesis Engine (Venture Vision: smart start creates smart startups).
-You evaluate 36 structured startup architecture inputs across 5 perspectives (CUSTOMER, OWNER, MARKET, INVESTOR, FINANCE).
+You evaluate 36 structured startup architecture inputs across 5 perspectives (CUSTOMER, OWNER, MARKET, INVESTOR, FINANCE). Use the founder's startup idea to keep recommendations specific and relevant.
 Weight Parameters: Customer=${weights.customerWeight}%, Owner=${weights.ownerWeight}%, Market=${weights.marketWeight}%, Investor=${weights.investorWeight}%, Finance=${weights.financeWeight}%.
 Respond with a <think>...</think> reasoning block followed by a valid JSON object matching the SynthesisResult schema.`;
 
   const userPrompt = `${thinkDirective}
-Synthesize a 5-phase executive execution roadmap for venture "${ventureName}" based on these 36 diagnostic card responses:
+Founder startup idea: "${startupIdea || 'Not provided'}"
+
+Synthesize a 5-phase executive execution roadmap for venture "${ventureName}" based on this idea and the 36 diagnostic card responses:
 
 ${stageSummaries.join('\n\n')}
 
@@ -346,6 +353,7 @@ async function startServer() {
       fullName: cleanName,
       email: normalizedEmail,
       ventureName: cleanVenture,
+      startupIdea: '',
       founderRole: cleanRole,
       ventureStage: cleanStage,
       passwordSalt: salt,
@@ -360,6 +368,7 @@ async function startServer() {
     // Update active workspace session for the newly registered user
     workspaceStore.email = newUser.email;
     workspaceStore.ventureName = newUser.ventureName;
+    workspaceStore.startupIdea = newUser.startupIdea;
     workspaceStore.updatedAt = now;
 
     const sessionToken = crypto.randomBytes(24).toString('hex');
@@ -373,6 +382,7 @@ async function startServer() {
         fullName: newUser.fullName,
         email: newUser.email,
         ventureName: newUser.ventureName,
+        startupIdea: newUser.startupIdea,
         founderRole: newUser.founderRole,
         ventureStage: newUser.ventureStage,
         createdAt: newUser.createdAt,
@@ -424,6 +434,7 @@ async function startServer() {
 
     workspaceStore.email = existingUser.email;
     workspaceStore.ventureName = existingUser.ventureName;
+    workspaceStore.startupIdea = existingUser.startupIdea || '';
     workspaceStore.updatedAt = existingUser.lastLoginAt;
 
     const sessionToken = crypto.randomBytes(24).toString('hex');
@@ -436,6 +447,7 @@ async function startServer() {
         fullName: existingUser.fullName,
         email: existingUser.email,
         ventureName: existingUser.ventureName,
+        startupIdea: existingUser.startupIdea || '',
         founderRole: existingUser.founderRole,
         ventureStage: existingUser.ventureStage,
         lastLoginAt: existingUser.lastLoginAt,
@@ -473,9 +485,23 @@ async function startServer() {
 
   // 3. Autosave card answer or workspace config
   app.post('/api/session/autosave', (req, res) => {
-    const { email, ventureName, answers, weights, qwenConfig } = req.body || {};
+    const { email, ventureName, startupIdea, answers, weights, qwenConfig } =
+      req.body || {};
     if (email) workspaceStore.email = email;
     if (ventureName) workspaceStore.ventureName = ventureName;
+    if (typeof startupIdea === 'string') {
+      const cleanIdea = startupIdea.trim();
+      if (cleanIdea.length > 1000) {
+        res.status(400).json({ error: 'Startup idea must be 1000 characters or fewer.' });
+        return;
+      }
+      workspaceStore.startupIdea = cleanIdea;
+      const user = registeredUsers[workspaceStore.email.toLowerCase()];
+      if (user) {
+        user.startupIdea = cleanIdea;
+        saveUsersToDisk();
+      }
+    }
     if (answers && typeof answers === 'object') {
       workspaceStore.answers = { ...workspaceStore.answers, ...answers };
     }
@@ -501,6 +527,8 @@ async function startServer() {
       req.body?.answers || workspaceStore.answers;
     const weights: WeightParameters = req.body?.weights || workspaceStore.weights;
     const ventureName: string = req.body?.ventureName || workspaceStore.ventureName;
+    const startupIdea: string =
+      req.body?.startupIdea || workspaceStore.startupIdea || '';
     const customApiBase: string =
       req.body?.apiBase || workspaceStore.qwenConfig.apiBase;
     const customModelName: string =
@@ -508,12 +536,14 @@ async function startServer() {
 
     workspaceStore.answers = answers;
     workspaceStore.weights = weights;
+    workspaceStore.startupIdea = startupIdea;
 
     const vectorMetrics = computeVectorScores(answers, weights);
     const { systemPrompt, userPrompt, chatMLPreview } = buildQwen3Messages(
       answers,
       weights,
-      ventureName
+      ventureName,
+      startupIdea
     );
 
     const artifactId = `#SYN-${Math.floor(9000 + Math.random() * 900)}`;
@@ -713,7 +743,8 @@ async function startServer() {
     const samplePrompt = buildQwen3Messages(
       workspaceStore.answers,
       workspaceStore.weights,
-      workspaceStore.ventureName
+      workspaceStore.ventureName,
+      workspaceStore.startupIdea
     );
     res.json({
       modelSpec: {
