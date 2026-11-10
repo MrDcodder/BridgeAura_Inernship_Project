@@ -1,12 +1,13 @@
 import React from 'react';
 import {
-  DECK_QUESTIONS,
   PERSPECTIVES,
   type AnswerRecord,
+  type DeckQuestion,
   type PerspectiveId,
 } from '../data/deckData';
 
 interface DossierReviewScreenProps {
+  questions: DeckQuestion[];
   answers: Record<string, AnswerRecord>;
   onEditPerspective: (p: PerspectiveId) => void;
   onReviewFullDeck: () => void;
@@ -15,6 +16,7 @@ interface DossierReviewScreenProps {
 }
 
 export const DossierReviewScreen: React.FC<DossierReviewScreenProps> = ({
+  questions,
   answers,
   onEditPerspective,
   onReviewFullDeck,
@@ -23,7 +25,7 @@ export const DossierReviewScreen: React.FC<DossierReviewScreenProps> = ({
 }) => {
   // Helper to resolve dynamic summary text from the user's selected answer
   const getDossierField = (questionId: string, fallback: string): string => {
-    const q = DECK_QUESTIONS.find((item) => item.id === questionId);
+    const q = questions.find((item) => item.id === questionId);
     if (!q) return fallback;
     const selId = answers[questionId]?.selectedOptionId || q.defaultOptionId;
     if (q.dossierShortValue && q.dossierShortValue[selId]) {
@@ -117,7 +119,7 @@ export const DossierReviewScreen: React.FC<DossierReviewScreenProps> = ({
               </div>
               <div>
                 <div className="font-headline font-bold text-xs text-[#0F172A] tabular-nums">
-                  {totalAnswered} of 36 Inputs
+                  {totalAnswered} of {questions.length} Inputs
                 </div>
                 <div className="text-[11px] text-[#64748B]">
                   High Signal Fidelity

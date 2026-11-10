@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import {
-  DECK_QUESTIONS,
   PERSPECTIVES,
   type AnswerRecord,
   type DeckQuestion,
@@ -8,7 +7,8 @@ import {
 } from '../data/deckData';
 
 interface QuestionDeckScreenProps {
-  currentQuestionIndex: number; // 0 to 35 across DECK_QUESTIONS
+  questions: DeckQuestion[];
+  currentQuestionIndex: number;
   onChangeQuestionIndex: (index: number) => void;
   answers: Record<string, AnswerRecord>;
   onSelectAnswer: (
@@ -22,6 +22,7 @@ interface QuestionDeckScreenProps {
 }
 
 export const QuestionDeckScreen: React.FC<QuestionDeckScreenProps> = ({
+  questions,
   currentQuestionIndex,
   onChangeQuestionIndex,
   answers,
@@ -32,8 +33,7 @@ export const QuestionDeckScreen: React.FC<QuestionDeckScreenProps> = ({
 }) => {
   const [transitionDir, setTransitionDir] = useState<'none' | 'next' | 'prev'>('none');
 
-  const question: DeckQuestion =
-    DECK_QUESTIONS[currentQuestionIndex] || DECK_QUESTIONS[3];
+  const question: DeckQuestion = questions[currentQuestionIndex] || questions[0];
 
   const currentAnswer = answers[question.id] || {
     questionId: question.id,
@@ -42,7 +42,7 @@ export const QuestionDeckScreen: React.FC<QuestionDeckScreenProps> = ({
     updatedAt: '',
   };
 
-  const perspectiveQuestions = DECK_QUESTIONS.filter(
+  const perspectiveQuestions = questions.filter(
     (q) => q.perspective === question.perspective
   );
 
@@ -59,7 +59,7 @@ export const QuestionDeckScreen: React.FC<QuestionDeckScreenProps> = ({
   };
 
   const handleNext = () => {
-    if (currentQuestionIndex < DECK_QUESTIONS.length - 1) {
+    if (currentQuestionIndex < questions.length - 1) {
       triggerAdvance(currentQuestionIndex + 1, 'next');
     } else {
       onFinishToDossier();
@@ -185,7 +185,7 @@ export const QuestionDeckScreen: React.FC<QuestionDeckScreenProps> = ({
             {/* Interactive Milestone Dots for Current Stage */}
             <div className="flex items-center gap-1.5">
               {perspectiveQuestions.map((pq) => {
-                const globalIdx = DECK_QUESTIONS.findIndex((d) => d.id === pq.id);
+                const globalIdx = questions.findIndex((d) => d.id === pq.id);
                 const isFilled = pq.questionIndex <= question.questionIndex;
                 const isCurrentDot = pq.id === question.id;
                 return (
@@ -348,7 +348,7 @@ export const QuestionDeckScreen: React.FC<QuestionDeckScreenProps> = ({
                 className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-[#00685f] hover:bg-[#005049] text-white text-xs sm:text-sm font-semibold shadow-sm teal-cta-glow transition-all active:scale-98 cursor-pointer"
               >
                 <span>
-                  {currentQuestionIndex === DECK_QUESTIONS.length - 1
+                  {currentQuestionIndex === questions.length - 1
                     ? 'Complete & Review Dossier'
                     : 'Continue to Next Card'}
                 </span>

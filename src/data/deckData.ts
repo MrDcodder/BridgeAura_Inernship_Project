@@ -1780,6 +1780,47 @@ export function createInitialAnswers(): Record<string, AnswerRecord> {
   return map;
 }
 
+const IDEA_STOP_WORDS = new Set([
+  'about', 'after', 'allow', 'allows', 'an', 'and', 'app', 'are', 'as', 'at',
+  'be', 'build', 'building', 'business', 'by', 'can', 'company', 'create',
+  'creates', 'do', 'for', 'from', 'have', 'helps', 'i', 'idea', 'improve', 'in',
+  'into', 'is', 'it', 'make', 'made', 'my', 'of', 'on', 'or', 'our', 'platform',
+  'product', 'reduce', 'service', 'solution', 'software', 'startup', 'that',
+  'the', 'their', 'them', 'this', 'through', 'to', 'tool', 'up', 'using', 'via',
+  'we', 'with', 'would', 'your',
+]);
+
+export function extractIdeaKeywords(idea: string): string[] {
+  const words = idea.match(/[a-zA-Z0-9][a-zA-Z0-9+#.-]*/g) || [];
+  const keywords = words.filter(
+    (word) => word.length > 1 && !IDEA_STOP_WORDS.has(word.toLowerCase())
+  );
+  return [...new Set(keywords)].slice(0, 5);
+}
+
+export function createIdeaTailoredQuestions(idea: string): DeckQuestion[] {
+  const keywords = extractIdeaKeywords(idea);
+  if (!keywords.length) return DECK_QUESTIONS;
+
+  const topic = keywords.join(' ');
+  const categoryContexts: Record<PerspectiveId, string> = {
+    CUSTOMER: `For customers served by a venture focused on ${topic}`,
+    OWNER: `As you build a venture focused on ${topic}`,
+    MARKET: `In the market for solutions focused on ${topic}`,
+    INVESTOR: `For investors evaluating a venture focused on ${topic}`,
+    FINANCE: `For a business focused on ${topic}`,
+  };
+
+  return DECK_QUESTIONS.map((question) => {
+    const originalHeadline =
+      question.headline.charAt(0).toLowerCase() + question.headline.slice(1);
+    return {
+      ...question,
+      headline: `${categoryContexts[question.perspective]}, ${originalHeadline}`,
+    };
+  });
+}
+
 export const DEFAULT_WEIGHTS: WeightParameters = {
   customerWeight: 25,
   ownerWeight: 15,

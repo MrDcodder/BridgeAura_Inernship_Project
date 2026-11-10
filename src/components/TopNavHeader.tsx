@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { AetherLogoMark, FounderAvatar } from './BrandIcons';
 import { PERSPECTIVES, type PerspectiveId } from '../data/deckData';
 
-export type ScreenMode = 'AUTH' | 'DECK' | 'DOSSIER' | 'SYNTHESIS';
+export type ScreenMode = 'AUTH' | 'IDEA' | 'DECK' | 'DOSSIER' | 'SYNTHESIS';
 
 interface TopNavHeaderProps {
   currentScreen: ScreenMode;
