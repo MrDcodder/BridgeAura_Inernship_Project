@@ -33,6 +33,7 @@
   - Real-time debounced autosave (`POST /api/session/autosave`), keyboard navigation (`Enter`, `←`, `→`), and optional context notes per card.
 - **04 · Executive Dossier Report**:
   - Consolidates all 36 structured inputs into a 5-stage executive matrix with signal fidelity tracking and one-click jump-to-edit per stage.
+  - Includes a four-quadrant customer journey map for Says, Thinks, Does, and Feels, personalized with the startup idea and target customer persona. The map is a hypothesis for founders to validate with customers.
 - **05 · Qwen3 4B Realtime Synthesis Output**:
   - Generates a 5-phase execution roadmap (**Phase 01: Problem Validation** through **Phase 05: Scale & Funding**) with actionable workstreams, critical milestones, and Qwen3 risk flags.
   - Includes **Startup Readiness gauges** (`Cust`, `Mkt`, `Fin`, and weighted overall readiness), **Synthesis Metric**, **Runway Projection**, and **Strategic Moat** grading.
@@ -141,7 +142,8 @@ The Express + Vite server will start on `http://localhost:3000`.
 │       ├── AuthDeckScreen.tsx                 # Screen 01: 3D Login & New User Registration card deck
 │       ├── StartupIdeaScreen.tsx              # Screen 02: Startup idea intake
 │       ├── QuestionDeckScreen.tsx             # Screen 03: Idea-tailored 36-card diagnostic deck
-│       ├── DossierReviewScreen.tsx            # Screen 04: 5-stage Executive Dossier report
+│       ├── DossierReviewScreen.tsx            # Screen 04: Executive Dossier report and customer journey map
+│       ├── CustomerJourneyMap.tsx             # Four-quadrant Says / Thinks / Does / Feels map
 │       ├── SynthesisOutputScreen.tsx          # Screen 05: Qwen3 4B 5-phase synthesis roadmap & weight tuner
 │       ├── TopNavHeader.tsx                   # Persistent header with Light/Dark theme toggle & Logout button
 │       ├── BackendArchModal.tsx               # Live Qwen3 4B endpoint configurator & ChatML inspector

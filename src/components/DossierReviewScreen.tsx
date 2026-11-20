@@ -5,10 +5,12 @@ import {
   type DeckQuestion,
   type PerspectiveId,
 } from '../data/deckData';
+import { CustomerJourneyMap } from './CustomerJourneyMap';
 
 interface DossierReviewScreenProps {
   questions: DeckQuestion[];
   answers: Record<string, AnswerRecord>;
+  startupIdea: string;
   onEditPerspective: (p: PerspectiveId) => void;
   onReviewFullDeck: () => void;
   onRunSynthesis: () => void;
@@ -18,6 +20,7 @@ interface DossierReviewScreenProps {
 export const DossierReviewScreen: React.FC<DossierReviewScreenProps> = ({
   questions,
   answers,
+  startupIdea,
   onEditPerspective,
   onReviewFullDeck,
   onRunSynthesis,
@@ -127,6 +130,14 @@ export const DossierReviewScreen: React.FC<DossierReviewScreenProps> = ({
               </div>
             </div>
           </div>
+
+          <CustomerJourneyMap
+            idea={startupIdea}
+            persona={getDossierField(
+              'CUST-04',
+              'Your startup idea’s target customer'
+            )}
+          />
 
           {/* 2x2 Grid for Stages 01–04 */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">

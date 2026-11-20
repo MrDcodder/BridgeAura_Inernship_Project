@@ -292,6 +292,7 @@ export default function App() {
               <DossierReviewScreen
                 questions={questions}
                 answers={answers}
+                startupIdea={startupIdea}
                 onEditPerspective={(p) => {
                   handleSelectPerspective(p);
                   setScreen('DECK');

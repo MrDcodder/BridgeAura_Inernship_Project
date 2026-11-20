@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <rect x="24" y="8" width="30" height="40" rx="7" transform="rotate(14 24 8)" fill="#E0FBF6" stroke="#0D9488" stroke-width="2.5"/>
+  <rect x="11" y="13" width="30" height="40" rx="7" transform="rotate(-7 11 13)" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2.5"/>
+  <rect x="16" y="13" width="31" height="42" rx="7" fill="url(#aetherCardGrad)"/>
+  <path d="M25.5 27.5L31.5 41.5L37.5 27.5" stroke="#FFFFFF" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <defs>
+    <linearGradient id="aetherCardGrad" x1="16" y1="13" x2="47" y2="55" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0D9488"/>
+      <stop offset="50%" stop-color="#2563EB"/>
+      <stop offset="100%" stop-color="#4F46E5"/>
+    </linearGradient>
+  </defs>
+</svg>
