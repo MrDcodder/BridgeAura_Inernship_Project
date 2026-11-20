@@ -153,3 +153,17 @@ The Express + Vite server will start on `http://localhost:3000`.
 │   └── report.png
 └── README.md
 ```
+
+---
+
+## 👥 Team Contributions
+
+The following roles and contributions are suggested assignments and should be verified by the team before publication.
+
+| Member | GitHub | Area of Work | Contribution |
+| :--- | :--- | :--- | :--- |
+| Diwyesh Nerkar | [MrDcodder](https://github.com/MrDcodder) | Backend | Implemented Express APIs, authentication, workspace autosave, and server-side session handling. |
+| Saish Chandroji | [Saish-17](https://github.com/Saish-17) | Frontend | Built the React screens and navigation flow for the startup diagnostic. |
+| Sagar Hanchinal | [sagarhanchin20](https://github.com/sagarhanchin20) | AI Integration | Worked on Qwen3/Gemini integration, prompt construction, and synthesis output handling. |
+| Sudeep M Hiremath | [sudeephiremath-hash](https://github.com/sudeephiremath-hash) | UI/UX Design | Designed the visual style, responsive layouts, and reusable interface components. |
+| Tarun Nair | [TarunNair003](https://github.com/TarunNair003) | Testing & Documentation | Tested user flows and documented project features, setup, and system architecture. |
